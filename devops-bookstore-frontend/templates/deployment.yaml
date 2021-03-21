@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-bookstore-frontend
+  labels:
+    app: devops-bookstore-frontend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: devops-bookstore-frontend
+  template:
+    metadata:
+      labels:
+        app: devops-bookstore-frontend
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: http
+            containerPort: {{ .Values.image.containerPort }}
+            protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.image.livenessProbe }}
+            port: http
+        readinessProbe:
+            httpGet:
+              path: {{ .Values.image.readinessProbe }}
+              port: http
